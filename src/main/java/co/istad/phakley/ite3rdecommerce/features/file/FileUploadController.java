@@ -2,7 +2,10 @@ package co.istad.phakley.ite3rdecommerce.features.file;
 
 import co.istad.phakley.ite3rdecommerce.features.file.dto.FileUploadResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,22 +18,41 @@ public class FileUploadController {
 
     private final FileUploadService fileUploadService;
 
-    @PostMapping("single")
+
+    @GetMapping("/{name}")
+    public FileUploadResponse findByName(@PathVariable String name) {
+        return fileUploadService.findByName(name);
+    }
+
+
+    @GetMapping
+    public Page<FileUploadResponse> findAll(
+            @RequestParam(required = false, defaultValue = "0") int pageNumber,
+            @RequestParam(required = false, defaultValue = "25") int pageSize
+    ) {
+        return fileUploadService.findAll(pageNumber, pageSize);
+    }
+
+
     @ResponseStatus(HttpStatus.CREATED)
-    public FileUploadResponse uploadSingle(@RequestPart MultipartFile file) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public FileUploadResponse upload(@RequestPart MultipartFile file) {
         return fileUploadService.upload(file);
     }
 
-    @PostMapping("/zmultiple")
     @ResponseStatus(HttpStatus.CREATED)
-    public List<FileUploadResponse> uploadMultiple(@RequestPart("files") MultipartFile[] files) {
+    @PostMapping("/multiple")
+    public List<FileUploadResponse> uploadMultiple(@RequestPart List<MultipartFile> files) {
         return fileUploadService.uploadMultiple(files);
     }
 
-    @DeleteMapping("/{name}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{name}")
     public void deleteByName(@PathVariable String name) {
         fileUploadService.deleteByName(name);
     }
-}
 
+
+
+
+}
