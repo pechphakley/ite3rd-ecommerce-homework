@@ -40,7 +40,7 @@ public class Order {
     @Column(nullable = false)
     private Boolean isDeleted;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order" , cascade = CascadeType.ALL)
     private List<OrderLine> orderLines;
 }
 
